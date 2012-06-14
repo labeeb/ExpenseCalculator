@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Cordova</title>
+<script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
+<script type="text/javascript" charset="utf-8" src="calllog.js"></script>
+<script type="text/javascript">
+var beep = function() {
+	//window.plugins.PhoneGapPlugin();
+	//document.getElementById("result").innerHTML=document.getElementById("result").innerHTML+" innerHtmlText";
+	var successCallBack = '';
+	var failCallBack = '';
+	document.getElementById("result").innerHTML= window.plugins.CallLog.list('all', successCallBack, failCallBack);
+	
+	/* window.plugins.phoneGapPluginActivity.list("/sdcard",
+		   null,
+		    "rtrttt"
+	    ); */
+    //navigator.notification.beep(2);
+};
+</script>
+</head>
+<body>
+<h1>Hello World</h1>
+<pre>
+   window.plugins.CallLog.list(day|month|year|all, successCallBack, failCallBack);
+   window.plugins.CallLog.show(phoneNumber, successCallBack, failCallBack);
+</pre>
+  <a href="#" class="btn large" onclick="beep();">Beep</a>
+  <div id="result"></div>
+</body>
+</html>
