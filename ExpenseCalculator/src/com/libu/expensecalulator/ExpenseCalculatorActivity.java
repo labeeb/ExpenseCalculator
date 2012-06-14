@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.libu.expensecalulator.db.Expense;
-import com.libu.expensecalulator.gmail.EmailManager;
 import com.libu.expensecalulator.services.MainService;
 import com.libu.expensecalulator.services.MainServiceImpl;
 
@@ -33,7 +32,7 @@ public class ExpenseCalculatorActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				EmailManager emailManager = new EmailManager();
+				/*EmailManager emailManager = new EmailManager();
 				String body = "<H1>Hello</H1>" +
 						 "<img src=\"www.trevorromain.com/.../father&son2.jpg\">";
 				try {
@@ -41,7 +40,7 @@ public class ExpenseCalculatorActivity extends Activity {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}*/
 				//startActivity(new Intent(ExpenseCalculatorActivity.this, SendMessageActivity.class));
 
 			}
