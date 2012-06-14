@@ -19,7 +19,7 @@ public interface MainService {
 	public void getUserDetails();
 	public void getMonthlyReport();
 	
-	public User getUser(String emailAddress);
+	public User getUser(String emailAddress)throws SQLException;
 	
 
 }

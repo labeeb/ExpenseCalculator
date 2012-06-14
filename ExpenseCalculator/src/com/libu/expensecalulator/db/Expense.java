@@ -14,6 +14,9 @@ public class Expense {
 	int id;
 	
 	@DatabaseField
+	int type;
+	
+	@DatabaseField
 	String discription;
 	
 	@DatabaseField
@@ -55,6 +58,14 @@ public class Expense {
 		this.spentByUser = spentByUser;
 	};
 	
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
 	public int saveObject(Context context) throws SQLException{
 		DatabaseHelper databaseHelper = new DatabaseHelper(context);
 		Dao<Expense, Integer> dao = databaseHelper.getExpenseDao();
@@ -86,7 +97,7 @@ public class Expense {
 	
 	@Override
 	public String toString() {
-		Date dateObject = new Date(addedDate);
+		Date dateObject = new Date(eventDate);
 		
 		return spentByUser.getName() +" spent "+ amount+" on "+dateObject.toString();
 	}

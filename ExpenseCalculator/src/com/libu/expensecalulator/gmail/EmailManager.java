@@ -134,6 +134,14 @@ public class EmailManager {
 		Transport.send(message);  
 	} 
 	
+	public void moveToReadFolder(Message messages[]) throws MessagingException{
+		
+		// Copy messages into destination,
+		inbox.copyMessages(messages, readFolder);
+		inbox.setFlags(messages, new Flags(Flags.Flag.DELETED), true);
+		Log.d(Constants.TAG, "Copy done");
+	}
+	
 	public synchronized void sendHtmlMail(String subject, String htmlText,  String recipients) throws Exception {  
 	    MimeMessage message = new MimeMessage(smtpSession);
 	    DataHandler handler = new DataHandler(new ByteArrayDataSource(htmlText.getBytes(), "text/html"));  
@@ -153,7 +161,8 @@ public class EmailManager {
 		while (headers.hasMoreElements()) {
 			Header h = (Header) headers.nextElement();
 			if(h.getName().equalsIgnoreCase("Return-Path")){
-				return true; 
+				Log.v(Constants.TAG, "Replay path found ");
+				//return true; 
 			}
 			
 			Log.d(Constants.TAG, "Header:"+h.getName() + ": " + h.getValue());

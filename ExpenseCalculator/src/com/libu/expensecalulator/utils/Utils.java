@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.DataFormatException;
@@ -37,8 +36,7 @@ public class Utils {
 
 	public static Expense getExpenseObjectFromSubject(String subject) throws SubjectFormatException, DataFormatException{
 		
-		String regex = "(Expence:([0-9]*\\.?[0-9]*)Date:(\\d{1,2}/\\d{1,2}/\\d{2,4}))";
-		Pattern p = Pattern.compile(regex);
+		Pattern p = Pattern.compile(Constants.SUBJECT_REGEX);
 		Matcher matcher = p.matcher(subject);
 		Expense expense = null;
 		if (matcher.matches()) {
@@ -67,8 +65,8 @@ public class Utils {
 	}
 	
 	public static Date getDateFromString(String dateString) {
-		String RFC1123_PATTERN1 = "dd/mm/yyyy";
-		DateFormat rfc1123Formate1 = new SimpleDateFormat(RFC1123_PATTERN1, Locale.US);
+		String RFC1123_PATTERN1 = "dd/MM/yyyy";
+		DateFormat rfc1123Formate1 = new SimpleDateFormat(RFC1123_PATTERN1);
 		Date date = null;
 		try {
 			date = rfc1123Formate1.parse(dateString);
