@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".SendMessageActivity"></activity>
+        <activity android:name=".ListEditor"></activity>
     </application>
 	<uses-permission
 		android:name="android.permission.INTERNET" />

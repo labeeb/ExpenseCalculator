@@ -2,6 +2,7 @@ package com.libu.expensecalulator.utils;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -179,4 +180,22 @@ public class Utils {
 		}
 		return null;
 	}
+	
+	
+	public static String getMonthName(int month) {
+	    DateFormatSymbols symbols = new DateFormatSymbols();
+	    String[] monthNames = symbols.getMonths();
+	    return monthNames[month];
+	}
+	
+	public static Date getCurrentMonth(){
+		Calendar currentDateCol = Calendar.getInstance();
+		currentDateCol.set(Calendar.DAY_OF_MONTH,1);
+		currentDateCol.set(Calendar.HOUR,-12);
+		currentDateCol.set(Calendar.MINUTE,0);
+		currentDateCol.set(Calendar.SECOND,0);
+		currentDateCol.set(Calendar.MILLISECOND,0);
+		return currentDateCol.getTime();
+	}
+
 }

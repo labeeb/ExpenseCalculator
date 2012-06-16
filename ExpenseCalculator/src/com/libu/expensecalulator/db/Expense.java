@@ -8,29 +8,39 @@ import android.content.Context;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 public class Expense {
 	@DatabaseField(generatedId = true)
 	int id;
+	public static final String EXPENSE_id = "id";
+	
 	
 	@DatabaseField
 	int type;
+	public static final String EXPENSE_type= "type";
 	
 	@DatabaseField
 	String discription;
+	public static final String EXPENSE_ID = "id";
 	
 	@DatabaseField
 	long addedDate;
+	public static final String EXPENSE_addedDate = "addedDate";
 	
 	@DatabaseField
 	long eventDate;
+	public static final String EXPENSE_eventDate = "eventDate";
 	
 	
 	@DatabaseField
 	float amount;
+	public static final String EXPENSE_amount = "amount";
 	
-	@DatabaseField(canBeNull = true, foreign = true, foreignAutoRefresh=true)
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh=true)
     User spentByUser;
+	
+	public static final String EXPENSE_spentByUser = "spentByUser";
 	
 	public Expense(){}
 
@@ -93,6 +103,15 @@ public class Expense {
 		Dao<Expense, Integer> dao = databaseHelper.getExpenseDao();
 		return dao.queryForAll();
 		
+	}
+	
+	public static List<Expense> getExpensesForThisMonth(Context context,Date currentMonth) throws SQLException{
+	
+		DatabaseHelper databaseHelper = new DatabaseHelper(context);
+		Dao<Expense, Integer> dao = databaseHelper.getExpenseDao();
+		QueryBuilder<Expense, Integer> userQueryBuilder = dao.queryBuilder();
+		userQueryBuilder.where().ge(EXPENSE_eventDate, currentMonth.getTime());
+		return userQueryBuilder.query();
 	}
 	
 	@Override

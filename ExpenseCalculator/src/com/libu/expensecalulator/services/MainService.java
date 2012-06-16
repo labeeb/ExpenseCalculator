@@ -2,6 +2,7 @@ package com.libu.expensecalulator.services;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.zip.DataFormatException;
 
 import com.libu.expensecalulator.db.User;
@@ -13,7 +14,7 @@ public interface MainService {
 	public String processEmail(String emailAddress,String subject,String body) throws SQLException, SubjectFormatException, DataFormatException;
 	
 	public void addExpense(User user,long amount,Date date,String details);
-	public void caluculateRent();
+	public String caluculateRent()throws Exception ;
 	public void generateReport();
 	public void addNotes();
 	public void getUserDetails();
@@ -21,5 +22,6 @@ public interface MainService {
 	
 	public User getUser(String emailAddress)throws SQLException;
 	
+	public List<User> getAllUsers()throws SQLException;
 
 }

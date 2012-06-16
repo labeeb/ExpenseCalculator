@@ -12,7 +12,7 @@ import com.j256.ormlite.table.TableUtils;
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String DATABASE_NAME = "expense.db";
-	private static final int DATABASE_VERSION =5;
+	private static final int DATABASE_VERSION =7;
 	private Dao<User, Integer> userDao = null;
 		
 	private Dao<Expense, Integer> expenseDao = null;
@@ -39,11 +39,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		User user = new User();
 		user.setEmailAddress("p.labeeb@gmail.com");
 		user.setName("Labeeb");
+		user.setRent(1400);
 		dao.create(user);
 		
 		user = new User();
 		user.setEmailAddress("labeebp@rapidvaluesolutions.com");
 		user.setName("rvsLabeeb");
+		user.setRent(1000);
 		dao.create(user);
 		
 		

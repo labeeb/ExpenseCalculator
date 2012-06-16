@@ -1,18 +1,14 @@
 package com.libu.expensecalulator;
 
-import java.sql.SQLException;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 
-import com.libu.expensecalulator.db.Expense;
 import com.libu.expensecalulator.services.MainService;
 import com.libu.expensecalulator.services.MainServiceImpl;
 
@@ -27,7 +23,8 @@ public class ExpenseCalculatorActivity extends Activity {
 
 		Button buttonSendMessage = (Button) findViewById(R.id.buttonSendMessage);
 		Button buttonCheckEmail = (Button)findViewById(R.id.buttonCheckEmail);
-
+		Button buttonListExpense = (Button)findViewById(R.id.buttonListExpense);
+		
 		buttonSendMessage.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -41,7 +38,7 @@ public class ExpenseCalculatorActivity extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}*/
-				//startActivity(new Intent(ExpenseCalculatorActivity.this, SendMessageActivity.class));
+				startActivity(new Intent(ExpenseCalculatorActivity.this, SendMessageActivity.class));
 
 			}
 		});
@@ -54,8 +51,17 @@ public class ExpenseCalculatorActivity extends Activity {
 
 			}
 		});
+		
+		buttonListExpense.setOnClickListener(new OnClickListener() {
 
-		ListView listView = (ListView) findViewById(R.id.listViewEmails);
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(ExpenseCalculatorActivity.this, ListEditor.class));
+
+			}
+		});
+
+		/*ListView listView = (ListView) findViewById(R.id.listViewEmails);
 		ArrayAdapter<Expense> adapter;
 		try {
 			adapter = new ArrayAdapter<Expense>(this,
@@ -64,7 +70,7 @@ public class ExpenseCalculatorActivity extends Activity {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 

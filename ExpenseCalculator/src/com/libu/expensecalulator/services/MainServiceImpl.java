@@ -2,6 +2,7 @@ package com.libu.expensecalulator.services;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.zip.DataFormatException;
 
 import javax.mail.Address;
@@ -13,6 +14,8 @@ import javax.mail.Multipart;
 import android.content.Context;
 import android.util.Log;
 
+import com.j256.ormlite.dao.Dao;
+import com.libu.expensecalulator.db.DatabaseHelper;
 import com.libu.expensecalulator.db.Expense;
 import com.libu.expensecalulator.db.User;
 import com.libu.expensecalulator.exceptions.SubjectFormatException;
@@ -40,11 +43,16 @@ public class MainServiceImpl implements MainService {
 			//For expense 
 			User user = getUser(emailAddress);
 			Expense expense = Utils.getExpenseObjectFromSubject(subject);
+			user.setTotalSpent(expense.getAmount());
+			user.update(context);
 			expense.setDiscription(body);
 			expense.setSpentByUser(user);
-			expense.saveObject(context);
+			
 			expense.setAddedDate(new Date().getTime());
 			expense.setType(Constants.ET_EXPENSE);
+			
+			expense.saveObject(context);
+			
 			Date date = new Date(expense.getEventDate());
 			String result = user.getName()+" added "+expense.getAmount()+" on "+date.toLocaleString();
 			Log.d(TAG, "result :"+result);
@@ -61,9 +69,62 @@ public class MainServiceImpl implements MainService {
 	}
 
 	@Override
-	public void caluculateRent() {
-		// TODO Auto-generated method stub
-
+	public String caluculateRent() throws Exception {
+		Date currentMonth = Utils.getCurrentMonth();
+		List<Expense> allExpenseInThisMonth = Expense.getExpensesForThisMonth(context,currentMonth);
+		List<User> allUsers = getAllUsers();
+		int noOfUser= allUsers.size();
+		
+		float totalExpenseInHome = 0; 
+		for(Expense expense:allExpenseInThisMonth){
+			totalExpenseInHome += expense.getAmount();
+		}
+		float forExpense=0;
+		StringBuilder recipients= new StringBuilder();
+		StringBuilder reportHtml = new StringBuilder("<Body>");
+		
+		Log.d(TAG, currentMonth+" For month:"+Utils.getMonthName(currentMonth.getMonth()));
+		
+		//reportHtml.append("<H3>").append("Report on ").append(Utils.getMonthName(currentMonth.getMonth())).append("</H3>");
+		
+		reportHtml.append("<table border=\"1\">");
+		reportHtml.append("<tr>");
+		reportHtml.append("<th>").append("Name").append("</th>");
+		reportHtml.append("<th>").append("Rent").append("</th>");
+		reportHtml.append("<th>").append("Spend").append("</th>");//TODO spell 
+		reportHtml.append("<th>").append("Total").append("</th>");
+		reportHtml.append("</tr>");
+		for(User user:allUsers){
+			forExpense = user.getRent() + totalExpenseInHome/noOfUser-user.getTotalSpent(); 
+			reportHtml.append("<tr>");
+			reportHtml.append("<td>").append(user.getName()).append("</td>");
+			reportHtml.append("<td>").append(user.getRent()).append("</td>");
+			reportHtml.append("<td>").append(user.getTotalSpent()).append("</td>");
+			reportHtml.append("<td>").append(forExpense).append("</td>");
+			reportHtml.append("</tr>");
+			recipients.append(user.getEmailAddress()).append(",");
+		}
+		reportHtml.append("</table>");
+		reportHtml.append("<span>Total : ").append(totalExpenseInHome).append("</span>");
+		reportHtml.append("</Body>");
+		
+		EmailManager emailManager = new EmailManager();
+		emailManager.sendHtmlMail("Report report"+Utils.getMonthName(currentMonth.getMonth()), reportHtml.toString(), recipients.toString());
+		 
+		//TODO total home expense in this month 
+		//TODO total amount you spend:
+		//TODO current rent
+		return reportHtml.toString();
+	}
+	
+	
+	
+	@Override
+	public List<User> getAllUsers() throws SQLException{
+		DatabaseHelper databaseHelper = new DatabaseHelper(context);
+		Dao<User, Integer> dao = databaseHelper.getUserDao();
+		return dao.queryForAll();
+		
 	}
 
 	@Override
@@ -100,6 +161,7 @@ public class MainServiceImpl implements MainService {
 		//EmailService emailService = new EmailServiceImple();
 		EmailManager emailManager = new EmailManager();
 		Message messages[] = null;
+		boolean isExpenseAdded = false;
 		try {
 			messages = emailManager.getUnReadMails();
 			if (null != messages) {
@@ -137,7 +199,7 @@ public class MainServiceImpl implements MainService {
 							String replay = null;
 							try{
 								replay = processEmail(emailAddress, subject, body);
-								
+								isExpenseAdded = true;
 							} catch (SubjectFormatException e) {
 								Log.e(TAG, "SubjectFormatException = "+e.getLocalizedMessage());
 								replay= "Please reformat the subject and sent again";
@@ -161,6 +223,13 @@ public class MainServiceImpl implements MainService {
 					}
 				}
 				emailManager.moveToReadFolder(messages);
+				if(isExpenseAdded){
+					caluculateRent();
+					Log.v(TAG, "isExpenseAdded  so sent message ");
+				}else{
+					Log.v(TAG, "isExpenseAdded  so sent message ");
+				}
+				
 			} else {
 				Log.e(TAG, "Messages is null ");
 			}
