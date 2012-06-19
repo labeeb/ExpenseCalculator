@@ -23,5 +23,7 @@ public interface MainService {
 	public User getUser(String emailAddress)throws SQLException;
 	
 	public List<User> getAllUsers()throws SQLException;
+	
+	public void setWelcomeMail(String recipients)throws Exception;
 
 }

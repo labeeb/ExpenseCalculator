@@ -24,6 +24,26 @@ public class ExpenseCalculatorActivity extends Activity {
 		Button buttonSendMessage = (Button) findViewById(R.id.buttonSendMessage);
 		Button buttonCheckEmail = (Button)findViewById(R.id.buttonCheckEmail);
 		Button buttonListExpense = (Button)findViewById(R.id.buttonListExpense);
+		Button buttonAddUser = (Button)findViewById(R.id.buttonAddUser);
+		Button buttonGenerateAndSend = (Button)findViewById(R.id.buttonGenerateAndSend);
+		
+		buttonGenerateAndSend.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				new GenerateReport().execute();
+			}
+		});
+		
+		buttonAddUser.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(ExpenseCalculatorActivity.this, AddUserActivity.class));
+				
+			}
+		});
+		
 		
 		buttonSendMessage.setOnClickListener(new OnClickListener() {
 
@@ -98,5 +118,34 @@ public class ExpenseCalculatorActivity extends Activity {
 		}
 	}
 	
+	
+	class GenerateReport extends AsyncTask<Void, Void, Void>{
+		ProgressDialog dialog ;
+		@Override
+		protected void onPreExecute() {
+			dialog = new ProgressDialog(ExpenseCalculatorActivity.this);
+			dialog.show();
+			super.onPreExecute();
+		}
+		
+		
+		@Override
+		protected Void doInBackground(Void... params) {
+			MainService mainService = new MainServiceImpl(ExpenseCalculatorActivity.this);
+			try {
+				mainService.caluculateRent();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			dialog.cancel();
+			super.onPostExecute(result);
+		}
+	}
 	
 }

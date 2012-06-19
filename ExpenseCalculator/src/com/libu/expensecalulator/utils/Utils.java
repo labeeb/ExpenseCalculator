@@ -41,7 +41,6 @@ public class Utils {
 		Matcher matcher = p.matcher(subject);
 		Expense expense = null;
 		if (matcher.matches()) {
-		    System.out.println("Count:"+matcher.groupCount());
 		    expense = new Expense();
 		    for(int i =0;i <= matcher.groupCount();i++){
 		    	//System.out.println((i+1)+" groups:"+matcher.group(i));
@@ -51,8 +50,22 @@ public class Utils {
 		    	}else if(i==3){
 		    		String dateString = matcher.group(i);
 		    		if(validateDayMonth(dateString)){
-		    			Date date = getDateFromString(dateString);
-		    			expense.setEventDate(date.getTime());
+		    			Calendar date = getDateFromString(dateString);
+		    			int year = date.get(Calendar.YEAR);
+		    			int month = date.get(Calendar.MONTH); 
+		    			Calendar currentMonthDate = Utils.getCurrentMonth();
+		    			int currentYear = currentMonthDate.get(Calendar.YEAR);
+		    			int currentMonth = currentMonthDate.get(Calendar.MONTH); 
+		    			
+		    			if(year != currentYear || month != currentMonth){
+		    				StringBuilder error= new StringBuilder(dateString);
+		    				error.append(", Need to be in ");
+		    				error.append(currentMonth+1).append("/").append(currentYear);
+		    				throw new DataFormatException(error.toString());
+		    			}else{
+		    				expense.setEventDate(date.getTime().getTime());
+		    			}
+		    			
 		    		}else{
 		    			throw new DataFormatException(dateString);
 		    		}
@@ -65,17 +78,17 @@ public class Utils {
 		return expense;
 	}
 	
-	public static Date getDateFromString(String dateString) {
+	public static Calendar getDateFromString(String dateString) {
 		String RFC1123_PATTERN1 = "dd/MM/yyyy";
 		DateFormat rfc1123Formate1 = new SimpleDateFormat(RFC1123_PATTERN1);
-		Date date = null;
+		Calendar cal = null;
 		try {
-			date = rfc1123Formate1.parse(dateString);
+			cal = Calendar.getInstance();
+			cal.setTime(rfc1123Formate1.parse(dateString));
 		} catch (ParseException e) {
 			Log.e(Constants.TAG, "ParseException in getDateOnly");
 		}
-		
-		return date;
+		return cal;
 	}
 	
 	public static String getAbsoluteAddress(String email) {
@@ -188,14 +201,21 @@ public class Utils {
 	    return monthNames[month];
 	}
 	
-	public static Date getCurrentMonth(){
+	public static Calendar getCurrentMonth(){
 		Calendar currentDateCol = Calendar.getInstance();
 		currentDateCol.set(Calendar.DAY_OF_MONTH,1);
-		currentDateCol.set(Calendar.HOUR,-12);
+		currentDateCol.set(Calendar.HOUR,0);
 		currentDateCol.set(Calendar.MINUTE,0);
 		currentDateCol.set(Calendar.SECOND,0);
 		currentDateCol.set(Calendar.MILLISECOND,0);
-		return currentDateCol.getTime();
+		return currentDateCol;
 	}
 
+	public static String getDateInFormat(long dateLong){
+		String RFC1123_PATTERN1 = "dd/MM/yyyy";
+		DateFormat rfc1123Formate1 = new SimpleDateFormat(RFC1123_PATTERN1);
+		Date date = new Date(dateLong);
+		return rfc1123Formate1.format(date);
+		
+	}
 }

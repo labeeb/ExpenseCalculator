@@ -14,5 +14,12 @@
     <string name="date">Date</string>
     <string name="discription">Discription</string>
     <string name="save">Save</string>
+    <string name="name">Name\'</string>
+    <string name="rent">Rent</string>
+    <string name="addUser">Add User</string>
+    <string name="generateSendReport">Generate and Send Report</string>
+    <string name="cancel">Cancel</string>
+    <string name="full">Full</string>
+    <string name="forThisMonth">For this Month</string>
 
 </resources>

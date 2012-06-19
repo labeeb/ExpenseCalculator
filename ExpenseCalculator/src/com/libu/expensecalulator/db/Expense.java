@@ -9,6 +9,7 @@ import android.content.Context;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.libu.expensecalulator.utils.Utils;
 
 public class Expense {
 	@DatabaseField(generatedId = true)
@@ -111,14 +112,18 @@ public class Expense {
 		Dao<Expense, Integer> dao = databaseHelper.getExpenseDao();
 		QueryBuilder<Expense, Integer> userQueryBuilder = dao.queryBuilder();
 		userQueryBuilder.where().ge(EXPENSE_eventDate, currentMonth.getTime());
+		//userQueryBuilder.orderBy(EXPENSE_eventDate, false);
 		return userQueryBuilder.query();
 	}
 	
 	@Override
 	public String toString() {
-		Date dateObject = new Date(eventDate);
-		
-		return spentByUser.getName() +" spent "+ amount+" on "+dateObject.toString();
+		return spentByUser.getName() +" spent "+ amount+" on "+Utils.getDateInFormat(eventDate);
 	}
 	
+	public int update(Context context) throws SQLException{
+		DatabaseHelper databaseHelper = new DatabaseHelper(context);
+		Dao<Expense, Integer> dao = databaseHelper.getExpenseDao();
+		return dao.update(this);
+	}
 }

@@ -21,7 +21,6 @@ public class User {
 	@DatabaseField
 	float rent;
 	
-	@DatabaseField
 	float totalSpent;
 	
 	/*@ForeignCollectionField(eager = false)

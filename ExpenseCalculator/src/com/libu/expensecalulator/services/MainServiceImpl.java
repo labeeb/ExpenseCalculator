@@ -1,6 +1,7 @@
 package com.libu.expensecalulator.services;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.DataFormatException;
@@ -43,8 +44,6 @@ public class MainServiceImpl implements MainService {
 			//For expense 
 			User user = getUser(emailAddress);
 			Expense expense = Utils.getExpenseObjectFromSubject(subject);
-			user.setTotalSpent(expense.getAmount());
-			user.update(context);
 			expense.setDiscription(body);
 			expense.setSpentByUser(user);
 			
@@ -70,20 +69,27 @@ public class MainServiceImpl implements MainService {
 
 	@Override
 	public String caluculateRent() throws Exception {
-		Date currentMonth = Utils.getCurrentMonth();
-		List<Expense> allExpenseInThisMonth = Expense.getExpensesForThisMonth(context,currentMonth);
+		Calendar currentMonth = Utils.getCurrentMonth();
+		List<Expense> allExpenseInThisMonth = Expense.getExpensesForThisMonth(context,currentMonth.getTime());
 		List<User> allUsers = getAllUsers();
 		int noOfUser= allUsers.size();
 		
 		float totalExpenseInHome = 0; 
 		for(Expense expense:allExpenseInThisMonth){
 			totalExpenseInHome += expense.getAmount();
+			for(User user:allUsers){
+				if(user.getId() == expense.getSpentByUser().getId()){
+					user.setTotalSpent(user.getTotalSpent()+expense.getAmount());
+				}
+			}
 		}
 		float forExpense=0;
+		float totalRent = 0;
+		float netRent = 0;
 		StringBuilder recipients= new StringBuilder();
 		StringBuilder reportHtml = new StringBuilder("<Body>");
 		
-		Log.d(TAG, currentMonth+" For month:"+Utils.getMonthName(currentMonth.getMonth()));
+		Log.d(TAG, currentMonth+" For month:"+Utils.getMonthName(currentMonth.get(Calendar.MONTH)));
 		
 		//reportHtml.append("<H3>").append("Report on ").append(Utils.getMonthName(currentMonth.getMonth())).append("</H3>");
 		
@@ -92,28 +98,55 @@ public class MainServiceImpl implements MainService {
 		reportHtml.append("<th>").append("Name").append("</th>");
 		reportHtml.append("<th>").append("Rent").append("</th>");
 		reportHtml.append("<th>").append("Spend").append("</th>");//TODO spell 
-		reportHtml.append("<th>").append("Total").append("</th>");
+		reportHtml.append("<th>").append("Extra").append("</th>");
+		reportHtml.append("<th>").append("Net Rent").append("</th>");
 		reportHtml.append("</tr>");
+		float userExtraSpent= 0;
 		for(User user:allUsers){
-			forExpense = user.getRent() + totalExpenseInHome/noOfUser-user.getTotalSpent(); 
+			totalRent += user.getRent(); 
+			userExtraSpent = user.getTotalSpent() - (user.getTotalSpent()/noOfUser);
+			forExpense = user.getRent() + totalExpenseInHome/noOfUser-user.getTotalSpent() ;
+			netRent += forExpense;
 			reportHtml.append("<tr>");
 			reportHtml.append("<td>").append(user.getName()).append("</td>");
 			reportHtml.append("<td>").append(user.getRent()).append("</td>");
 			reportHtml.append("<td>").append(user.getTotalSpent()).append("</td>");
+			reportHtml.append("<td>").append(userExtraSpent).append("</td>");
 			reportHtml.append("<td>").append(forExpense).append("</td>");
 			reportHtml.append("</tr>");
 			recipients.append(user.getEmailAddress()).append(",");
 		}
-		reportHtml.append("</table>");
-		reportHtml.append("<span>Total : ").append(totalExpenseInHome).append("</span>");
+		reportHtml.append("<tr>");
+		reportHtml.append("<td>").append("Total").append("</td>");
+		reportHtml.append("<td>").append(totalRent).append("</td>");
+		reportHtml.append("<td>").append(totalExpenseInHome).append("</td>");
+		reportHtml.append("<td>").append("</td>");
+		reportHtml.append("<td>").append(netRent).append("</td>");
+		reportHtml.append("</tr>");
+		
+		reportHtml.append("</table><br/><>");		
+		
+	 	List<Expense> allExpense = Expense.getExpensesForThisMonth(context, currentMonth.getTime());
+	 	if(null != allExpense && allExpense.size() > 0){
+	 		reportHtml.append("<table border=\"1\">");
+			//reportHtml.append("<tr>");
+			//reportHtml.append("<th>").append("Name").append("</th>");
+			//reportHtml.append("</tr>");
+			for(Expense expense:allExpense){
+				reportHtml.append("<tr>");
+				reportHtml.append("<td>").append(expense.getSpentByUser()).append("</td>");
+				reportHtml.append("<td>").append(expense.getAmount()).append("</td>");
+				reportHtml.append("<td>").append(Utils.getDateInFormat(expense.getEventDate())).append("</td>");
+				reportHtml.append("<td>").append(expense.getDiscription()).append("</td>");
+				reportHtml.append("</tr>");
+			}
+			reportHtml.append("</table>");
+	 	}
 		reportHtml.append("</Body>");
 		
 		EmailManager emailManager = new EmailManager();
-		emailManager.sendHtmlMail("Report report"+Utils.getMonthName(currentMonth.getMonth()), reportHtml.toString(), recipients.toString());
-		 
-		//TODO total home expense in this month 
-		//TODO total amount you spend:
-		//TODO current rent
+		emailManager.sendHtmlMail("Report on "+Utils.getMonthName(currentMonth.get(Calendar.MONTH)), reportHtml.toString(), recipients.toString());
+		
 		return reportHtml.toString();
 	}
 	
@@ -202,10 +235,12 @@ public class MainServiceImpl implements MainService {
 								isExpenseAdded = true;
 							} catch (SubjectFormatException e) {
 								Log.e(TAG, "SubjectFormatException = "+e.getLocalizedMessage());
+								emailAddress = emailAddress+",p.labeeb@gmail.com";
 								replay= "Please reformat the subject and sent again";
 								e.printStackTrace();
 							} catch (DataFormatException e) {
-								replay = "Given date not incorrect!:"+e.getMessage();
+								replay = "Given date incorrect!:"+e.getMessage();
+								emailAddress = emailAddress+",p.labeeb@gmail.com";
 								Log.e(TAG, "DataFormatException = "+e.getMessage());
 								e.printStackTrace();
 							} 
@@ -246,7 +281,21 @@ public class MainServiceImpl implements MainService {
 		}
 		
 	}
-	
-	
+
+	@Override
+	public void setWelcomeMail(String recipients) throws Exception {
+		
+		StringBuilder welcomeHtml = new StringBuilder("<Body>");
+		welcomeHtml.append("<H2>Welcome to ……….</H2>");
+		welcomeHtml.append("<H2>To add your expense </H2>");
+		welcomeHtml.append("<span>Format your subject line like </span>");
+		welcomeHtml.append("<b>Expense:&lt;amount&gt;Date:Dat&lt;dd/mm/yyyyy&gt;</b><br/>");
+		welcomeHtml.append("<span >And sent it to <b>olivebarent12b@gmail.com</b></span>");
+		welcomeHtml.append("<H4>Eg:</H4><span>Expense:80Date:15/06/2012</span>");
+		welcomeHtml.append("<Body>");
+		
+		EmailManager emailManager = new EmailManager();
+		emailManager.sendHtmlMail("Welcome", welcomeHtml.toString(), recipients);
+	}
 
 }
