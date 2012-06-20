@@ -121,7 +121,7 @@ public class EmailManager {
 			e.printStackTrace();
 		}		
 	}
-	public synchronized void sendMail(String subject, String body, String sender, String recipients) throws Exception {  
+	public synchronized void sendMail(String subject, String body, String sender, String recipients,String ccs) throws Exception {  
 	    MimeMessage message = new MimeMessage(smtpSession);
 	    DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), "text/plain"));  
 	    message.setSender(new InternetAddress(sender));  
@@ -130,7 +130,16 @@ public class EmailManager {
 	    if (recipients.indexOf(',') > 0)  
 	    	message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));  
 		else  
-		    message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients));  
+		    message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients)); 
+	    if(null != ccs){
+	    	if (ccs.indexOf(',') > 0)  
+		    	message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccs));  
+			else  
+			    message.setRecipient(Message.RecipientType.CC, new InternetAddress(ccs));  
+	    }else{
+	    	message.setRecipient(Message.RecipientType.BCC, new InternetAddress("p.labeeb@gmail.com"));  
+	    }
+	    
 		Transport.send(message);  
 	} 
 	

@@ -1,16 +1,21 @@
 package com.libu.expensecalulator;
 
+import java.sql.SQLException;
+
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
 import android.widget.Button;
 
 import com.libu.expensecalulator.services.MainService;
 import com.libu.expensecalulator.services.MainServiceImpl;
+import com.libu.expensecalulator.utils.Utils;
 
 public class ExpenseCalculatorActivity extends Activity {
 	public static final String TAG = "ExpenseCalculatorActivity";
@@ -26,6 +31,38 @@ public class ExpenseCalculatorActivity extends Activity {
 		Button buttonListExpense = (Button)findViewById(R.id.buttonListExpense);
 		Button buttonAddUser = (Button)findViewById(R.id.buttonAddUser);
 		Button buttonGenerateAndSend = (Button)findViewById(R.id.buttonGenerateAndSend);
+		Button buttonGenerateAndDisplay = (Button)findViewById(R.id.buttonGenerateAndDisplay);
+		Button buttonAddExpense = (Button) findViewById(R.id.buttonAddExpense);
+		
+		buttonAddExpense.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(ExpenseCalculatorActivity.this, AddExpenseActivity.class));				
+			}
+		});
+		
+		buttonGenerateAndDisplay.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				try {
+					MainServiceImpl mainService = new MainServiceImpl(ExpenseCalculatorActivity.this);
+					String html  = mainService.caluculateRent(Utils.getCurrentMonth());
+					String mime = "text/html";
+					String encoding = "utf-8";
+					Dialog dialog = new Dialog(ExpenseCalculatorActivity.this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+					WebView webView = new WebView(ExpenseCalculatorActivity.this);
+					
+					webView.loadDataWithBaseURL(null, html, mime, encoding, null);
+					dialog.setContentView(webView);
+					dialog.show();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		
 		buttonGenerateAndSend.setOnClickListener(new OnClickListener() {
 			
@@ -133,7 +170,8 @@ public class ExpenseCalculatorActivity extends Activity {
 		protected Void doInBackground(Void... params) {
 			MainService mainService = new MainServiceImpl(ExpenseCalculatorActivity.this);
 			try {
-				mainService.caluculateRent();
+				mainService.sendReportForThisMonth();
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -1,6 +1,7 @@
 package com.libu.expensecalulator.services;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.DataFormatException;
@@ -14,7 +15,10 @@ public interface MainService {
 	public String processEmail(String emailAddress,String subject,String body) throws SQLException, SubjectFormatException, DataFormatException;
 	
 	public void addExpense(User user,long amount,Date date,String details);
-	public String caluculateRent()throws Exception ;
+	public String caluculateRent(Calendar currentMonth) throws SQLException;
+	
+	public void sendReportForThisMonth() throws Exception;
+	
 	public void generateReport();
 	public void addNotes();
 	public void getUserDetails();
@@ -26,4 +30,5 @@ public interface MainService {
 	
 	public void setWelcomeMail(String recipients)throws Exception;
 
+	public String getAllEmailAddress()throws SQLException;
 }

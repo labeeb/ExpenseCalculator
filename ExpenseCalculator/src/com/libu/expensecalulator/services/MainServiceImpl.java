@@ -68,8 +68,7 @@ public class MainServiceImpl implements MainService {
 	}
 
 	@Override
-	public String caluculateRent() throws Exception {
-		Calendar currentMonth = Utils.getCurrentMonth();
+	public String caluculateRent(Calendar currentMonth) throws SQLException  {
 		List<Expense> allExpenseInThisMonth = Expense.getExpensesForThisMonth(context,currentMonth.getTime());
 		List<User> allUsers = getAllUsers();
 		int noOfUser= allUsers.size();
@@ -144,8 +143,6 @@ public class MainServiceImpl implements MainService {
 	 	}
 		reportHtml.append("</Body>");
 		
-		EmailManager emailManager = new EmailManager();
-		emailManager.sendHtmlMail("Report on "+Utils.getMonthName(currentMonth.get(Calendar.MONTH)), reportHtml.toString(), recipients.toString());
 		
 		return reportHtml.toString();
 	}
@@ -229,37 +226,37 @@ public class MainServiceImpl implements MainService {
 								body = Utils.parseMultipart((Multipart) content);
 							}
 						
-							String replay = null;
+							String errorMail = null;
 							try{
-								replay = processEmail(emailAddress, subject, body);
+								String emailMessage = processEmail(emailAddress, subject, body);
+								emailManager.sendMail("RE:"+subject, emailMessage, Constants.EMAILADDRESS, emailAddress,getAllEmailAddress());
 								isExpenseAdded = true;
 							} catch (SubjectFormatException e) {
 								Log.e(TAG, "SubjectFormatException = "+e.getLocalizedMessage());
 								emailAddress = emailAddress+",p.labeeb@gmail.com";
-								replay= "Please reformat the subject and sent again";
+								errorMail= "Please reformat the subject and sent again";
 								e.printStackTrace();
 							} catch (DataFormatException e) {
-								replay = "Given date incorrect!:"+e.getMessage();
+								errorMail = "Given date incorrect!:"+e.getMessage();
 								emailAddress = emailAddress+",p.labeeb@gmail.com";
 								Log.e(TAG, "DataFormatException = "+e.getMessage());
 								e.printStackTrace();
 							} 
 							
-							if (!message.isSet(Flags.Flag.SEEN) && !message.isSet(Flags.Flag.ANSWERED)) {
-								message.setFlag(Flags.Flag.FLAGGED, true);
-								//Here you will read the email
+							Log.d(TAG, "replay : " + errorMail);
+							if(null != errorMail){
+								emailManager.sendMail("RE:"+subject, errorMail, Constants.EMAILADDRESS, emailAddress,null);
 							}
 							
-							Log.d(TAG, "replay : " + replay);
-							if(null != replay){
-								emailManager.sendMail("RE:"+subject, replay, Constants.EMAILADDRESS, emailAddress);
+							if (!message.isSet(Flags.Flag.SEEN) && !message.isSet(Flags.Flag.ANSWERED)) {
+								message.setFlag(Flags.Flag.FLAGGED, true);
 							}
 						}
 					}
 				}
 				emailManager.moveToReadFolder(messages);
 				if(isExpenseAdded){
-					caluculateRent();
+					sendReportForThisMonth();
 					Log.v(TAG, "isExpenseAdded  so sent message ");
 				}else{
 					Log.v(TAG, "isExpenseAdded  so sent message ");
@@ -296,6 +293,25 @@ public class MainServiceImpl implements MainService {
 		
 		EmailManager emailManager = new EmailManager();
 		emailManager.sendHtmlMail("Welcome", welcomeHtml.toString(), recipients);
+	}
+
+	@Override
+	public void sendReportForThisMonth() throws Exception {
+		Calendar currentMonth = Utils.getCurrentMonth();
+		String  recipients = getAllEmailAddress();
+		String reportHtml = caluculateRent(currentMonth);
+		EmailManager emailManager = new EmailManager();
+		emailManager.sendHtmlMail("Report on "+Utils.getMonthName(currentMonth.get(Calendar.MONTH)), reportHtml, recipients);
+	}
+
+	@Override
+	public String getAllEmailAddress() throws SQLException {
+		StringBuilder recipients = new StringBuilder();
+		List<User> allUsers = getAllUsers();
+		for(User user:allUsers){
+			recipients.append(user.getEmailAddress()).append(",");
+		}
+		return recipients.toString();
 	}
 
 }

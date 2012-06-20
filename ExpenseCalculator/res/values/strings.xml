@@ -21,5 +21,7 @@
     <string name="cancel">Cancel</string>
     <string name="full">Full</string>
     <string name="forThisMonth">For this Month</string>
+    <string name="generateAndDisplayReport">Generate and Display Report</string>
+    <string name="addExpense">Add Expense</string>
 
 </resources>

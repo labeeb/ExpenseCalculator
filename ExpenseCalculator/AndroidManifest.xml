@@ -22,6 +22,7 @@
         <activity android:name=".SendMessageActivity" android:configChanges="orientation" ></activity>
         <activity android:name=".ListEditor" android:configChanges="orientation" ></activity>
         <activity android:name=".AddUserActivity" android:configChanges="orientation" ></activity>
+        <activity android:name=".AddExpenseActivity" android:configChanges="orientation" ></activity>
     </application>
 	<uses-permission
 		android:name="android.permission.INTERNET" />
