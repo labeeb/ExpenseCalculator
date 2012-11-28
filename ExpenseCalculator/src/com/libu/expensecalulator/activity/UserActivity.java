@@ -9,7 +9,7 @@ import com.libu.expensecalulator.R;
 import com.libu.expensecalulator.fragment.CustomFragment;
 import com.libu.expensecalulator.fragment.TabContent;
 import com.libu.expensecalulator.fragment.TabsFragment_1;
-import com.libu.expensecalulator.fragment.TabsFragment_2;
+import com.libu.expensecalulator.fragment.UserFragment;
 
 public class UserActivity extends FragmentActivity {
 	TabHost tHost;
@@ -31,7 +31,7 @@ public class UserActivity extends FragmentActivity {
                 if(tabId.equalsIgnoreCase("One")){
                 	 ft.replace(R.id.realtabcontent,new CustomFragment("One"));
                 }else {
-                	 ft.replace(R.id.realtabcontent,new TabsFragment_2());
+                	 ft.replace(R.id.realtabcontent,new UserFragment());
                 }
                 ft.commit();
                 

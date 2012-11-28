@@ -15,7 +15,7 @@ import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
-public class TabsFragment_2 extends Fragment implements OnTabChangeListener {
+public class UserFragment extends Fragment implements OnTabChangeListener {
 
 	private static final String TAG = "FragmentTabs";
 	public static final String TAB_WORDS = "words";
