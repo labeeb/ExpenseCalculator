@@ -23,5 +23,10 @@
     <string name="forThisMonth">For this Month</string>
     <string name="generateAndDisplayReport">Generate and Display Report</string>
     <string name="addExpense">Add Expense</string>
+    <string name="userName">UserName</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="signUp">Sign Up</string>
+    <string name="passworddoesnotMatch">Password doesn\'t match!</string>
 
 </resources>

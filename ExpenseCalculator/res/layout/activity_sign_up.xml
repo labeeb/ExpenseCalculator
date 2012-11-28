@@ -1,0 +1,84 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        tools:context=".SignUpActivity" />
+
+    <EditText
+        android:id="@+id/signUp_editTextUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:hint="@string/userName" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/signUp_editTextEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/signUp_editTextUserName"
+        android:ems="10"
+        android:hint="@string/emailAddress"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/signU_editTextPassword1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/signUp_editTextEmail"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/signUp_editTextPassword2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/signU_editTextPassword1"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/signUp_buttonSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/signUp_editTextRent"
+        android:layout_marginTop="30dp"
+        android:text="@string/signUp" />
+
+    <Button
+        android:id="@+id/signUp_buttonCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/signUp_buttonSignUp"
+        android:layout_alignBottom="@+id/signUp_buttonSignUp"
+        android:layout_alignRight="@+id/signUp_editTextPassword2"
+        android:text="@string/cancel" />
+
+    <EditText
+        android:id="@+id/signUp_editTextRent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/textView1"
+        android:ems="10"
+        android:hint="@string/rent"
+        android:inputType="numberDecimal" />
+
+</RelativeLayout>

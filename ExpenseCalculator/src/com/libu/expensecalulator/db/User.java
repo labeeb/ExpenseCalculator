@@ -17,6 +17,11 @@ public class User {
 	
 	@DatabaseField(unique=true)
 	String emailAddress;
+	private static final String EMAILADDRESS = "emailAddress";
+	
+	@DatabaseField
+	String password;
+	private static final String PASSWORD = "password";
 	
 	@DatabaseField
 	float rent;
@@ -31,6 +36,14 @@ public class User {
 
 	public int getId() {
 		return id;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getName() {
@@ -78,6 +91,16 @@ public class User {
 		Dao<User, Integer> dao = databaseHelper.getUserDao();
 		QueryBuilder<User, Integer> userQueryBuilder = dao.queryBuilder();
 		userQueryBuilder.where().eq("emailAddress", emailAddress);
+		User user = userQueryBuilder.queryForFirst();
+		return user;
+	}
+	
+	public static User getUser(Context context,String emailAddress,String password) throws SQLException{
+		DatabaseHelper databaseHelper = new DatabaseHelper(context);
+		Dao<User, Integer> dao = databaseHelper.getUserDao();
+		QueryBuilder<User, Integer> userQueryBuilder = dao.queryBuilder();
+		userQueryBuilder.where().eq(EMAILADDRESS, emailAddress)
+		.and().eq(PASSWORD, password);
 		User user = userQueryBuilder.queryForFirst();
 		return user;
 	}
