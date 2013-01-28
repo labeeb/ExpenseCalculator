@@ -19,9 +19,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/forThisMonth" />
+
+         <Button
+             android:id="@+id/buttonLisForPicker"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/datePicker" />
+         <Button
+             android:id="@+id/buttonLisReport"
+             android:layout_width="wrap_content"
+             android:layout_height="fill_parent"
+             android:text="@string/generateAndDisplayReport" />
         
     </LinearLayout>
-
+<DatePicker
+        android:id="@+id/datePickerSelectMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
    <ListView
         android:id="@+id/editorListView"
         android:layout_width="match_parent"
